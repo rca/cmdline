@@ -1,0 +1,5 @@
+.gitignoe
+bin/
+lib/
+pyvenv.cfg
+pip-selfcheck.json
