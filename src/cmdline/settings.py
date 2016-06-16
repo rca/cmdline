@@ -5,6 +5,7 @@ import os
 import sys
 
 from collections import defaultdict
+from importlib import import_module
 
 import yaml
 
@@ -125,7 +126,18 @@ class SettingsParser(BaseCommand):
 
             arg = '--{}'.format(key.lower().replace('_', '-'))
             if 'type' in _info:
-                _info['type'] = __builtins__[_info['type']]
+                _type = _info['type']
+                if '.' not in _type:
+                    module = __builtins__
+                    func = __builtins__[_type]
+                else:
+                    module_name, attr = _type.rsplit('.', 1)
+
+                    module = import_module(module_name)
+
+                    func = getattr(module, attr)
+                    
+                _info['type'] = func
 
             parser.add_argument(arg, **_info)
 
