@@ -11,11 +11,14 @@ SCRIPT_DIR = os.path.dirname(__file__)
 
 
 # http://victorlin.me/posts/2012/08/26/good-logging-practice-in-python
-def setup_logging():
+def setup_logging(fail_silently=False):
     """
     Setup logging configuration
+
+    Finds the most user-facing log config on disk and uses it
     """
-    for path in list(get_config_paths(filename='logconfig.yml'))[-1::-1]:
+    paths = list(get_config_paths(filename='logconfig.yml'))
+    for path in paths[-1::-1]:
         if not os.path.exists(path):
             continue
 
@@ -28,3 +31,8 @@ def setup_logging():
             config['handlers']['console']['level'] = LOG_LEVEL.upper()
 
         logging.config.dictConfig(config)
+
+        break
+    else:
+        if not fail_silently:
+            raise LogconfigError('Unable to find logconfig in {}'.format(paths))
