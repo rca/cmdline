@@ -108,10 +108,18 @@ class SettingsParser(BaseCommand):
 
         return self.settings
 
-    def setup_parser(self, args=None, parser=None):
+    def setup_parser(self):
+        args = self.settings._compiled_settings
+        parser = self.parser
+
+        self.parse(args, parser)
+
+        command_info = args.get('_COMMANDS', {})
+        for k, v in command_info.get('_main', {}).items():
+            setattr(parser, k, v)
+
+    def parse(self, args, parser):
         subcommands = defaultdict(dict)
-        args = args or self.settings._compiled_settings
-        parser = parser or self.parser
 
         for key, info in args.items():
             if key.startswith('_'):
@@ -128,7 +136,6 @@ class SettingsParser(BaseCommand):
             if 'type' in _info:
                 _type = _info['type']
                 if '.' not in _type:
-                    module = __builtins__
                     func = __builtins__[_type]
                 else:
                     module_name, attr = _type.rsplit('.', 1)
@@ -144,12 +151,13 @@ class SettingsParser(BaseCommand):
         if subcommands:
             self.subparsers = parser.add_subparsers(help='sub-commands')
 
-        subcommand_info = args.get('_SUBCOMMANDS', {})
+        # go through all the args found for subcommands and create a subparser for them
+        command_info = args.get('_COMMANDS', {})
         for subcommand, args in subcommands.items():
-            help_text = subcommand_info.get(subcommand, {}).get('help')
-            subcommand_parser = self.subparsers.add_parser(subcommand, help=help_text)
+            kwargs = command_info.get(subcommand, {})
+            subcommand_parser = self.subparsers.add_parser(subcommand, **kwargs)
 
             # instantiate the command to fill the parser
-            self.setup_parser(args=args, parser=subcommand_parser)
+            self.parse(args=args, parser=subcommand_parser)
 
             subcommand_parser.set_defaults(subcommand=subcommand)
