@@ -156,3 +156,11 @@ root_dir/
 |  +- settings.yml
 +- setup.py
 ```
+## cmdline during development
+To ensure config files are properly found during development, install your package in "development mode".  For example:
+```
+$ cd /path/to/project/root_dir/
+$ pyvenv /tmp/remote
+$ . /tmp/remote/bin/activate
+$ pip install -e .
+```
