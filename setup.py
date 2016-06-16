@@ -10,7 +10,7 @@ if not SCRIPT_DIR:
 
 
 setup(name='cmdline',
-      version='0.0.1',
+      version='0.0.2',
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
@@ -19,4 +19,7 @@ setup(name='cmdline',
       long_description=open('README.md').read(),
       url='http://github.com/rca/cmdline',
       license='LICENSE',
+      install_requires=[
+          'PyYAML>=3',
+      ]
 )
