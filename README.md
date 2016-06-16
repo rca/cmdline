@@ -30,6 +30,11 @@ $ remote --remote-addr=https://arg-takes-precedence.example.com/
 remote addr: https://arg-takes-precedence.example.com/
 ```
 
+## Installation
+```
+pip install cmdline
+```
+
 ## Settings
 Settings are configured in an overlaid fashion starting with a root configuration packaged with the application.  Standard [argparse](https://docs.python.org/3/library/argparse.html) options are used to configure settings.
 
