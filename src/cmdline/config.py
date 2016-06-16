@@ -18,7 +18,7 @@ def get_config_paths(filename=None):
 
     for dirpath in pkg_locations + (
             os.path.join(sys.prefix, 'config'),
-            '/etc/{}'.format(script_name),
+            os.path.join(sys.prefix, 'etc', script_name),
             os.path.expanduser('~/.{}'.format(script_name)),
             ):
         full_path = dirpath
