@@ -40,6 +40,9 @@ class Settings(object):
                         continue
 
                     for k, i in data.items():
+                        if k.startswith('_'):
+                            continue
+
                         v = i['default']
 
                         self.logger.debug('k={}, v={}'.format(k, v))
@@ -110,6 +113,9 @@ class SettingsParser(BaseCommand):
         parser = parser or self.parser
 
         for key, info in args.items():
+            if key.startswith('_'):
+                continue
+
             subcommand = info.pop('subcommand', None)
             if subcommand:
                 subcommands[subcommand][key] = info
@@ -126,8 +132,10 @@ class SettingsParser(BaseCommand):
         if subcommands:
             self.subparsers = parser.add_subparsers(help='sub-commands')
 
+        subcommand_info = args.get('_SUBCOMMANDS', {})
         for subcommand, args in subcommands.items():
-            subcommand_parser = self.subparsers.add_parser(subcommand)
+            help_text = subcommand_info.get(subcommand, {}).get('help')
+            subcommand_parser = self.subparsers.add_parser(subcommand, help=help_text)
 
             # instantiate the command to fill the parser
             self.setup_parser(args=args, parser=subcommand_parser)
