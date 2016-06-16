@@ -101,10 +101,13 @@ class SettingsParser(BaseCommand):
             v = getattr(args, item)
 
             k = item.upper().replace('-', '_')
-            if v != self.settings._compiled_settings[k]['default']:
+            if v != getattr(self.settings, k):
                 self.logger.debug('cmdline k={}, v={}'.format(k, v))
 
                 setattr(self.settings, k, v)
+
+        subcommand = getattr(args, 'subcommand', None)
+        self.settings._SUBCOMMAND = subcommand
 
         return self.settings
 
@@ -131,6 +134,11 @@ class SettingsParser(BaseCommand):
                 continue
 
             _info = info.copy()
+
+            # get the current value
+            _val = getattr(self.settings, key, None)
+            if _val:
+                _info['default'] = _val
 
             arg = '--{}'.format(key.lower().replace('_', '-'))
             if 'type' in _info:
