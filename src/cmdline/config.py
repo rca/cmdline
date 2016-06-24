@@ -1,16 +1,15 @@
 import os
 import sys
 
-try:
-    import pkg_resources
+CONFIG_ROOT = 'CMDLINE_CONFIG_ROOT'
 
-    d = pkg_resources.get_distribution('metermaid')
-    pkg_locations = (
-        os.path.join(d.location, 'config'),
-        os.path.join(os.path.dirname(d.location), 'config'),
-    )
-except ImportError:
-    pkg_locations = ()
+config_root = os.environ.get(CONFIG_ROOT)
+if config_root and not os.path.exists(config_root):
+    raise OSError('{}={} does not exist'.format(CONFIG_ROOT, config_root))
+
+pkg_locations = (
+    config_root,
+)
 
 
 def get_config_paths(filename=None):
