@@ -54,11 +54,11 @@ Environment variables map exactly to the name of the setting, i.e. the environme
 Command line arguments are lowercase-dashed versions of the setting, for instance, the command line argument `--remote-addr` configures the `REMOTE_ADDR` setting.
 
 ### Subcommands
-The settings parser supports [argparse subcommands](https://docs.python.org/3/library/argparse.html#sub-commands).  A setting can be configured to be for a subcommand by adding a `subcommand` key to the setting's options.  For example:
+The settings parser supports [argparse subcommands](https://docs.python.org/3/library/argparse.html#sub-commands).  A setting can be configured to be for a subcommand by adding a `_subcommand` key to the setting's options.  For example:
 ```
 COPY_FORCE
   default: no
-  subcommand: copy
+  _subcommand: copy
 ```
 The `_SUBCOMMAND` setting contains the name of the subcommand the command was run with.
 

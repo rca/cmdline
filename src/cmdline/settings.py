@@ -137,7 +137,7 @@ class SettingsParser(BaseCommand):
             if key.startswith('_'):
                 continue
 
-            subcommand = info.pop('subcommand', None)
+            subcommand = info.pop('_subcommand', None)
             if subcommand:
                 subcommands[subcommand][key] = info
                 continue
