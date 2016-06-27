@@ -79,3 +79,24 @@ class SettingsTestCase(unittest.TestCase):
         self.settings.run()
 
         self.assertEqual('5678', self.settings.REMOTE_PORT)
+
+    def test_compile_settings(self, *mocks):
+        """
+        ensure compile settings is only run once
+        """
+        mocked = mock.Mock()
+        mocked.side_effect = [yaml.load(StringIO(CONFIG_YAML)), None, None]
+
+        self.settings.get_settings_from_file = mocked
+
+        settings_run = self.settings.run
+
+        def run():
+            return settings_run()
+
+        self.settings.run = mock.Mock(side_effect=run)
+
+        SettingsParser.compile_settings(sys_argv=[])
+        SettingsParser.compile_settings(sys_argv=[])
+
+        self.assertEqual(1, len(self.settings.run.mock_calls))

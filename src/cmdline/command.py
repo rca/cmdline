@@ -9,7 +9,11 @@ class BaseCommand(object):
         self.parser = parser or argparse.ArgumentParser()
         self.subparsers = None
 
-        self.sys_argv = sys_argv or sys.argv[1:]
+        # only set sys_argv to the system argv when it's None
+        # otherwise use the kwarg, even if it's an empty list
+        self.sys_argv = sys_argv
+        if self.sys_argv is None:
+            self.sys_argv = sys.argv[1:]
 
         # already parsed arguments, i.e. do not call self.parser.parse_args()
         self.args = args
