@@ -170,15 +170,23 @@ class SettingsParser(BaseCommand):
 
             parser.add_argument(arg, **_info)
 
-        if subcommands:
+        command_info = args.get('_COMMANDS', {})
+
+        if subcommands or command_info:
             self.subparsers = parser.add_subparsers(help='sub-commands')
 
         # go through all the args found for subcommands and create a subparser for them
-        command_info = args.get('_COMMANDS', {})
         for subcommand, args in subcommands.items():
             kwargs = command_info.get(subcommand, {})
             subcommand_parser = self.subparsers.add_parser(subcommand, **kwargs)
 
             self.parse(args=args, parser=subcommand_parser)
+
+            subcommand_parser.set_defaults(subcommand=subcommand)
+
+        # check for any commands listed in command_info without additional settings
+        for subcommand in set(command_info.keys()) - set(subcommands.keys()):
+            kwargs = command_info[subcommand]
+            subcommand_parser = self.subparsers.add_parser(subcommand, **kwargs)
 
             subcommand_parser.set_defaults(subcommand=subcommand)
