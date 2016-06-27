@@ -16,7 +16,7 @@ class UtilTestCase(unittest.TestCase):
         self.assertEqual(expected, util.listify(' a,   b  '))
 
     def test_date(self):
-        expected = datetime.datetime(2014, 9, 26)
+        expected = datetime.datetime(2014, 9, 26).date()
 
         self.assertEqual(expected, util.date('2014-09-26'))
 

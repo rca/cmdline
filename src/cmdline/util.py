@@ -5,7 +5,7 @@ from argparse import ArgumentTypeError
 
 def date(input):
     try:
-        return datetime.datetime.strptime(input, "%Y-%m-%d")
+        return datetime.datetime.strptime(input, "%Y-%m-%d").date()
     except ValueError:
         msg = "Not a valid datetime: '{0}'.".format(input)
         raise ArgumentTypeError(msg)
