@@ -2,7 +2,6 @@ from __future__ import absolute_import
 
 import logging
 import os
-import sys
 
 from collections import defaultdict
 from importlib import import_module
@@ -11,6 +10,7 @@ import yaml
 
 from . import BaseCommand
 from .config import get_config_paths
+from .exceptions import SettingsError
 
 
 class Settings(object):
@@ -28,32 +28,41 @@ class Settings(object):
         # the comprehensive list of all settings
         self._compiled_settings = None
 
+    def get_settings_from_file(self, settings_path):
+        if os.path.exists(settings_path):
+            self.paths.append(settings_path)
+
+            with open(settings_path, 'r') as fh:
+                data = yaml.load(fh)
+
+                return data
+
+    def run(self):
         # look for all config paths on the filesystem
         for settings_path in get_config_paths(filename='settings.yml'):
             self.logger.debug('trying {}'.format(settings_path))
 
-            if os.path.exists(settings_path):
-                self.paths.append(settings_path)
+            _settings = self.get_settings_from_file(settings_path)
+            if not _settings:
+                continue
 
-                with open(settings_path, 'r') as fh:
-                    data = yaml.load(fh)
-                    if not data:
-                        continue
+            for k, i in _settings.items():
+                if k.startswith('_'):
+                    continue
 
-                    for k, i in data.items():
-                        if k.startswith('_'):
-                            continue
+                v = i.get('default')
 
-                        v = i['default']
+                self.logger.debug('k={}, v={}'.format(k, v))
 
-                        self.logger.debug('k={}, v={}'.format(k, v))
+                if self._compiled_settings and k not in self._compiled_settings:
+                    raise ValueError('setting {} not in {}'.format(k, self.paths[0]))
 
-                        if self._compiled_settings and k not in self._compiled_settings:
-                            raise ValueError('setting {} not in {}'.format(k, self.paths[0]))
+                setattr(self, k, v)
 
-                        setattr(self, k, v)
+            self._compiled_settings = self._compiled_settings or _settings
 
-                self._compiled_settings = self._compiled_settings or data
+        if not self._compiled_settings:
+            raise SettingsError('Settings config not found')
 
         # look for environment variables that match settings keys
         for k in self._compiled_settings:
@@ -72,25 +81,25 @@ class SettingsParser(BaseCommand):
     Produces an ArgumentParser instance that provides arguments
     for all settings found by the .settings.Settings class
     """
-    settings = None
+    settings = Settings()
 
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('{}.{}'.format(__name__, self.__class__.__name__))
-        self.settings = Settings()
 
         super(SettingsParser, self).__init__(*args, **kwargs)
 
     @classmethod
-    def get_settings(cls):
-        if cls.settings is None:
-            settings_parser = SettingsParser()
+    def compile_settings(cls, *args, **kwargs):
+        if cls.settings._compiled_settings is None:
+            cls.settings.run()
 
-            cls.settings = settings_parser.run()
+            settings_parser = SettingsParser(*args, **kwargs)
+            settings_parser.run()
 
         return cls.settings
 
     def run(self):
-        args = self.parser.parse_args()
+        args = self.parse_args()
 
         for item in dir(args):
             if item.startswith('_'):
@@ -165,7 +174,6 @@ class SettingsParser(BaseCommand):
             kwargs = command_info.get(subcommand, {})
             subcommand_parser = self.subparsers.add_parser(subcommand, **kwargs)
 
-            # instantiate the command to fill the parser
             self.parse(args=args, parser=subcommand_parser)
 
             subcommand_parser.set_defaults(subcommand=subcommand)

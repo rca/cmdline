@@ -5,12 +5,14 @@ REMOTE_ADDR:
   default: 'https://example.com/'
   help: the remote address
 ```
-and importing `cmdline.settings` into your program:
+and compiling the settings in your main program:
 ```
-from cmdline import settings
+from cmdline import SettingsParser, settings
 
 
 def main():
+    SettingsParser.compile_settings()
+
     remote = settings.REMOTE_ADDR
 
     print('remote addr:', remote)
@@ -80,7 +82,7 @@ Settings can be converted to a particular type using argparse's `type` setting. 
 When `type` is a dotted string, the given function will be imported and used.  For example, setting `type: convesion.convert_bool` will call the `convert_bool()` function in the [conversion](https://pypi.python.org/pypi/conversion) package.
 
 ## Logging
-Logging is configured through Python's logging.config.dictConfig function.  More info on dictconfig is at [docs.python.org](https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig); an example is below.  This configuration sets a `console` handler that sends logs to stdout and a `null` handler that throws away logs.  The default logging configuration is to log WARN level and higher messages to the console, which is setup by the `root` logger, and two additional loggers are configured for the `mypkg.foo` and `mypkg.bar` loggers, where the loglevel for `mypkg.foo` is set to DEBUG and `mypkg.bar` is thrown out altogether.
+Similarly, logging is configured through Python's `logging.config.dictConfig()` function.  More info on dictconfig is at [docs.python.org](https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig); an example is below.  This configuration sets a `console` handler that sends logs to stdout and a `null` handler that throws away logs.  The default logging configuration is to log WARN level and higher messages to the console, which is setup by the `root` logger, and two additional loggers are configured for the `mypkg.foo` and `mypkg.bar` loggers, where the loglevel for `mypkg.foo` is set to DEBUG and `mypkg.bar` is thrown out altogether.
 
 ```
 version: 1
@@ -116,6 +118,21 @@ loggers:
 root:
   level: WARN
   handlers: [console]
+```
+Once the configuration is written, logging is configured by calling the `setup_logging()` function:
+```
+import logging
+from cmdline import setup_logging
+
+
+def main():
+    setup_logging()
+
+    logging.getLogger(__name__).warning('ello')
+
+
+if __name__ == '__main__':
+    sys.exit(main())
 ```
 ### Log level environment
 The only logging configuration that can be updated outside the configuration file is the default log level, which can be changed with the environment variable `LOG_LEVEL`; for example, `LOG_LEVEL=debug remote`.
@@ -161,11 +178,5 @@ root_dir/
 |  +- settings.yml
 +- setup.py
 ```
-## cmdline during development
-To ensure config files are properly found during development, install your package in "development mode".  For example:
-```
-$ cd /path/to/project/root_dir/
-$ pyvenv /tmp/remote
-$ . /tmp/remote/bin/activate
-$ pip install -e .
-```
+## Config root environment variable
+Setting the environment variable `CMDLINE_CONFIG_ROOT` will make the given path the primary config location for settings and logging.

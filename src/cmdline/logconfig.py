@@ -6,6 +6,7 @@ import logging.config
 import yaml
 
 from .config import get_config_paths
+from .exceptions import LogconfigError
 
 SCRIPT_DIR = os.path.dirname(__file__)
 

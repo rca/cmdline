@@ -22,6 +22,8 @@ class BaseCommand(object):
 
         self.args = self.parser.parse_args(self.sys_argv)
 
+        return self.args
+
     def run(self):
         if not self.args:
             self.parse_args()

@@ -4,3 +4,7 @@ class CommandError(Exception):
 
 class LogconfigError(Exception):
     pass
+
+
+class SettingsError(Exception):
+    pass
