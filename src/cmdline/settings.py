@@ -149,7 +149,12 @@ class SettingsParser(BaseCommand):
             if _val:
                 _info['default'] = _val
 
-            arg = '--{}'.format(key.lower().replace('_', '-'))
+            if _info.pop('_positional', False):
+                dashes = ''
+            else:
+                dashes = '--'
+
+            arg = '{}{}'.format(dashes, key.lower().replace('_', '-'))
             if 'type' in _info:
                 _type = _info['type']
                 if '.' not in _type:
