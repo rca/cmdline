@@ -20,8 +20,8 @@ def setup_logging(fail_silently=False):
     """
     config = None
 
-    paths = list(get_config_paths(filename='logconfig.yml'))
-    for path in paths[-1::-1]:
+    paths = list(get_config_paths(filename='logconfig.yml', reversed=True))
+    for path in paths:
         if not os.path.exists(path):
             continue
 
