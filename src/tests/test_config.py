@@ -45,6 +45,21 @@ class ConfigTestCase(unittest.TestCase):
 
         self.assertEqual(the_path, config_paths[0])
 
+    def test_config_root_env_reversed(self, *mocks):
+        """
+        ensure CMDLINE_CONFIG_ROOT is prepended to config paths
+        """
+        the_path = '/the/path'
+
+        os_mock = mocks[-1]
+        os_mock.environ = {
+            'CMDLINE_CONFIG_ROOT': the_path,
+        }
+
+        config_paths = list(get_config_paths(reversed=True))
+
+        self.assertEqual(the_path, config_paths[0])
+
     def test_get_config_paths_with_filename(self, *mocks):
         """
         ensure given filename is appended to paths
