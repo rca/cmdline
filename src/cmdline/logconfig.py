@@ -18,6 +18,8 @@ def setup_logging(fail_silently=False):
 
     Finds the most user-facing log config on disk and uses it
     """
+    config = None
+
     paths = list(get_config_paths(filename='logconfig.yml'))
     for path in paths[-1::-1]:
         if not os.path.exists(path):
@@ -37,3 +39,5 @@ def setup_logging(fail_silently=False):
     else:
         if not fail_silently:
             raise LogconfigError('Unable to find logconfig in {}'.format(paths))
+
+    return config
