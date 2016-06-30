@@ -9,7 +9,7 @@ if not SCRIPT_DIR:
 
 
 setup(name='cmdline',
-      version='0.1.3',
+      version='0.1.5',
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
