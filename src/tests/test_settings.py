@@ -151,3 +151,29 @@ class SettingsTestCase(unittest.TestCase):
 
         # ensure the subcommand was created
         self.assertEqual(['foo'], list(settings_parser.subparsers.choices.keys()))
+
+    def test_multiple_subcommands(self, *mocks):
+        """
+        A single setting can be applied to multiple subcommands
+        """
+        mocked = mock.Mock()
+        settings_yml = """
+        FOO:
+          type: int
+          _subcommand:
+            - test1
+            - test2
+        """
+        mocked.side_effect = [yaml.load(settings_yml), None, None]
+
+        self.settings.get_settings_from_file = mocked
+
+        # process settings files
+        self.settings.run()
+
+        # create a parser
+        settings_parser = SettingsParser()
+        settings_parser.compile_settings(sys_argv=[])
+
+        # ensure the subcommand was created
+        self.assertEqual(['test1', 'test2'], list(settings_parser.subparsers.choices.keys()))
