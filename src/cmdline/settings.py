@@ -139,7 +139,13 @@ class SettingsParser(BaseCommand):
 
             subcommand = info.pop('_subcommand', None)
             if subcommand:
-                subcommands[subcommand][key] = info
+                # handle a setting being applied to multiple subcommands
+                if not isinstance(subcommand, list):
+                    subcommand = [subcommand]
+
+                for item in subcommand:
+                    subcommands[item][key] = info
+
                 continue
 
             _info = info.copy()
