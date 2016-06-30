@@ -176,4 +176,4 @@ class SettingsTestCase(unittest.TestCase):
         settings_parser.compile_settings(sys_argv=[])
 
         # ensure the subcommand was created
-        self.assertEqual(['test1', 'test2'], list(settings_parser.subparsers.choices.keys()))
+        self.assertEqual(['test1', 'test2'], sorted(list(settings_parser.subparsers.choices.keys())))
