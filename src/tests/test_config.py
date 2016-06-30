@@ -43,7 +43,7 @@ class ConfigTestCase(unittest.TestCase):
 
         config_paths = list(get_config_paths())
 
-        self.assertEqual(the_path, config_paths[0])
+        self.assertEqual(the_path, config_paths[-1])
 
     def test_config_root_env_reversed(self, *mocks):
         """
