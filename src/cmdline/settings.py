@@ -209,8 +209,6 @@ class SettingsParser(BaseCommand):
             parser_args = []
 
             short_option = _info.pop('_short_option', None)
-            if short_option:
-                parser_args.append(short_option)
 
             if _info.pop('_positional', False):
                 if short_option:
@@ -237,6 +235,9 @@ class SettingsParser(BaseCommand):
                 _info['type'] = func
 
             parser_args.append(arg)
+
+            if short_option:
+                parser_args.append(short_option)
 
             parser.add_argument(*parser_args, **_info)
 
