@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 import os
 
 from distutils.core import setup
@@ -9,7 +9,7 @@ if not SCRIPT_DIR:
 
 
 setup(name='cmdline',
-      version='0.1.6',
+      version='0.1.7',
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
