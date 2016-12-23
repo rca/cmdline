@@ -158,7 +158,18 @@ class SettingsParser(BaseCommand):
             if _val:
                 _info['default'] = _val
 
+            parser_args = []
+
+            short_option = _info.pop('_short_option', None)
+            if short_option:
+                parser_args.append(short_option)
+
             if _info.pop('_positional', False):
+                if short_option:
+                    raise SettingsError(
+                        "positional argument can't have short_option"
+                    )
+
                 dashes = ''
             else:
                 dashes = '--'
@@ -174,10 +185,12 @@ class SettingsParser(BaseCommand):
                     module = import_module(module_name)
 
                     func = getattr(module, attr)
-                    
+
                 _info['type'] = func
 
-            parser.add_argument(arg, **_info)
+            parser_args.append(arg)
+
+            parser.add_argument(*parser_args, **_info)
 
         command_info = args.get('_COMMANDS', {})
 
