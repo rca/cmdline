@@ -1,16 +1,34 @@
 from __future__ import absolute_import
 
+import inspect
 import logging
 import os
 
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 from importlib import import_module
 
 import yaml
 
 from . import BaseCommand
-from .config import get_config_paths
+from .config import CONFIG_ROOT, find_config_root, get_config_paths
 from .exceptions import SettingsError
+
+
+# http://stackoverflow.com/a/21912744/703144
+def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
+    class OrderedLoader(Loader):
+        pass
+
+    def construct_mapping(loader, node):
+        loader.flatten_mapping(node)
+        return object_pairs_hook(loader.construct_pairs(node))
+
+    OrderedLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        construct_mapping
+    )
+
+    return yaml.load(stream, OrderedLoader)
 
 
 class Settings(object):
@@ -21,24 +39,16 @@ class Settings(object):
         self.logger = logging.getLogger('{}.{}'.format(__name__, self.__class__.__name__))
         self.paths = []
 
-        # after the first settings file is processed, new setting names are 
+        # after the first settings file is processed, new setting names are
         # not allowed to be injected; only the values of existing names can
         # be overridden.  this is to avoid silly typos in override settings
         # and the default settings file distributed with the code should be
         # the comprehensive list of all settings
         self._compiled_settings = None
 
-    def get_settings_from_file(self, settings_path):
-        if os.path.exists(settings_path):
-            self.paths.append(settings_path)
+    def _compile_settings(self):
+        _settings = None
 
-            with open(settings_path, 'r') as fh:
-                data = yaml.load(fh)
-
-                return data
-
-    def run(self):
-        # look for all config paths on the filesystem
         for settings_path in get_config_paths(filename='settings.yml'):
             self.logger.debug('trying {}'.format(settings_path))
 
@@ -60,6 +70,44 @@ class Settings(object):
                 setattr(self, k, v)
 
             self._compiled_settings = self._compiled_settings or _settings
+
+    def get_settings_from_file(self, settings_path):
+        if os.path.exists(settings_path):
+            self.paths.append(settings_path)
+
+            with open(settings_path, 'r') as fh:
+                data = ordered_load(fh, yaml.SafeLoader)
+
+                return data
+
+    def run(self):
+        self._compile_settings()
+
+        # when settings have not been compiled and CONFIG_ROOT is not given
+        # in the environment, attempt to find the config root based on
+        # the script's path being run
+        if not self._compiled_settings and CONFIG_ROOT not in os.environ:
+            # traverse up the files in the stack in order to attempt to
+            # find a config directory within the stack
+            stack_files = []
+
+            current_frame = inspect.currentframe()
+            outer_frames = inspect.getouterframes(current_frame)
+
+            for item in outer_frames:
+                filename = item.filename
+                if filename not in stack_files:
+                    stack_files.append(filename)
+
+            for item in stack_files:
+                config_root = find_config_root(item)
+                if config_root:
+                    os.environ[CONFIG_ROOT] = config_root
+
+                    self._compile_settings()
+
+                if self._compiled_settings:
+                    break
 
         if not self._compiled_settings:
             raise SettingsError('Settings config not found')
