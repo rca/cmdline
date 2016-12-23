@@ -82,6 +82,7 @@ class SettingsParser(BaseCommand):
     for all settings found by the .settings.Settings class
     """
     settings = Settings()
+    argument_parser = None
 
     def __init__(self, *args, **kwargs):
         self.logger = logging.getLogger('{}.{}'.format(__name__, self.__class__.__name__))
@@ -95,6 +96,8 @@ class SettingsParser(BaseCommand):
 
             settings_parser = SettingsParser(*args, **kwargs)
             settings_parser.run()
+
+            cls.argument_parser = settings_parser.parser
 
         return cls.settings
 
