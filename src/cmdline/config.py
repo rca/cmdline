@@ -4,6 +4,21 @@ import sys
 CONFIG_ROOT = 'CMDLINE_CONFIG_ROOT'
 
 
+def find_config_root(path=sys.argv[0]):
+    """
+    Finds config root relative to the given file path
+    """
+    dirname = os.path.dirname(path)
+    lastdirname = None
+
+    while dirname != lastdirname:
+        config_root = os.path.join(dirname, 'config')
+        if os.path.exists(config_root):
+            return config_root
+
+        lastdirname, dirname = dirname, os.path.dirname(dirname)
+
+
 def get_config_paths(filename=None, reversed=False):
     config_paths = []
 
