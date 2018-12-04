@@ -1,6 +1,7 @@
-import mock
 import os
 import unittest
+
+from unittest import mock
 
 from cmdline.config import get_config_paths
 
