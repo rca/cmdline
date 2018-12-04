@@ -24,13 +24,13 @@ class ConfigTestCase(unittest.TestCase):
         os_mock.path = os.path
 
         expected = [
-            '/foo/config',
+            '/foo/cmdline/unittest',
             '/foo/etc/script_name',
             '/home/user/.script_name'
         ]
 
         self.assertEqual(expected, list(get_config_paths()))
-        
+
     def test_config_root_env(self, *mocks):
         """
         ensure CMDLINE_CONFIG_ROOT is prepended to config paths
@@ -76,7 +76,7 @@ class ConfigTestCase(unittest.TestCase):
         os_mock.path = os.path
 
         expected = [
-            '/foo/config/filename',
+            '/foo/cmdline/unittest/filename',
             '/foo/etc/script_name/filename',
             '/home/user/.script_name/filename',
         ]

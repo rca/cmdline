@@ -1,3 +1,4 @@
+import inspect
 import os
 import sys
 
@@ -24,6 +25,9 @@ def get_config_paths(filename=None, reversed=False):
 
     script_name = os.path.basename(sys.argv[0])
 
+    package = inspect.stack()[-2].frame.f_globals['__package__']
+    data_path = os.path.join('cmdline', package)
+
     config_root = os.environ.get(CONFIG_ROOT)
     if config_root:
         if not os.path.exists(config_root):
@@ -38,13 +42,13 @@ def get_config_paths(filename=None, reversed=False):
     # handle debian/ubuntu strangeness where `pip install` will install
     # to /usr/local, yet sys.prefix is /usr
     prefix = sys.prefix
-    if not os.path.exists(os.path.join(prefix, 'config')):
+    if not os.path.exists(os.path.join(prefix, data_path)):
         _prefix = os.path.join(prefix, 'local')
-        if os.path.exists(os.path.join(_prefix, 'config')):
+        if os.path.exists(os.path.join(_prefix, data_path)):
             prefix = _prefix
 
     for dirpath in (
-            os.path.join(prefix, 'config'),
+            os.path.join(prefix, data_path),
             os.path.join(prefix, 'etc', script_name),
             os.path.expanduser('~/.{}'.format(script_name)),
             ) + config_locations:
