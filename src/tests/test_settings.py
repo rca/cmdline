@@ -1,8 +1,8 @@
-import mock
 import unittest
 import yaml
 
 from io import StringIO
+from unittest import mock
 
 from cmdline import SettingsParser, settings
 from cmdline.settings import Settings
