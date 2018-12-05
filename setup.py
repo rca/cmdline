@@ -8,8 +8,9 @@ if not SCRIPT_DIR:
     SCRIPT_DIR = os.getcwd()
 
 
-setup(name='cmdline',
-      version='0.1.8',
+setup(
+      name='cmdline',
+      version='0.0.0',
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
