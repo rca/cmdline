@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 import os
 
-from distutils.core import setup
+from setuptools import find_packages, setup
 
 SCRIPT_DIR = os.path.dirname(__file__)
 if not SCRIPT_DIR:
     SCRIPT_DIR = os.getcwd()
 
+SRC_PREFIX = 'src'
+
+
+packages = find_packages(SRC_PREFIX)
 
 setup(
       name='cmdline',
@@ -14,8 +18,8 @@ setup(
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
-      package_dir = {'': 'src'},
-      packages=['cmdline'],
+      package_dir={'': SRC_PREFIX},
+      packages=packages,
       long_description=open('README.md').read(),
       url='http://github.com/rca/cmdline',
       license='LICENSE',
