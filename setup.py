@@ -1,24 +1,45 @@
 #!/usr/bin/env python
 import os
 
-from distutils.core import setup
+from setuptools import find_packages, setup
 
 SCRIPT_DIR = os.path.dirname(__file__)
 if not SCRIPT_DIR:
     SCRIPT_DIR = os.getcwd()
 
+SRC_PREFIX = 'src'
 
-setup(name='cmdline',
-      version='0.1.8',
+
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
+
+packages = find_packages(SRC_PREFIX)
+
+setup(
+      name='cmdline',
+      version='0.0.0',
       description='Utilities for consistent command line tools',
       author='Roberto Aguilar',
       author_email='r@rreboto.com',
-      package_dir = {'': 'src'},
-      packages=['cmdline'],
-      long_description=open('README.md').read(),
+      package_dir={'': SRC_PREFIX},
+      packages=packages,
+      long_description=readme(),
+      long_description_content_type='text/markdown',
       url='http://github.com/rca/cmdline',
       license='LICENSE',
+      classifiers=[
+            'Development Status :: 4 - Beta',
+            'Environment :: Console',
+            'Intended Audience :: Developers',
+            'License :: OSI Approved :: Apache Software License',
+            'Operating System :: OS Independent',
+            'Programming Language :: Python',
+            'Natural Language :: English',
+            'Topic :: Utilities'
+      ],
       install_requires=[
           'PyYAML>=3',
-      ]
+      ],
 )
