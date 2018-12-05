@@ -10,6 +10,11 @@ if not SCRIPT_DIR:
 SRC_PREFIX = 'src'
 
 
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
+
 packages = find_packages(SRC_PREFIX)
 
 setup(
@@ -20,7 +25,8 @@ setup(
       author_email='r@rreboto.com',
       package_dir={'': SRC_PREFIX},
       packages=packages,
-      long_description=open('README.md').read(),
+      long_description=readme(),
+      long_description_content_type='text/markdown',
       url='http://github.com/rca/cmdline',
       license='LICENSE',
       classifiers=[
