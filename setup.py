@@ -23,7 +23,17 @@ setup(
       long_description=open('README.md').read(),
       url='http://github.com/rca/cmdline',
       license='LICENSE',
+      classifiers=[
+            'Development Status :: 4 - Beta',
+            'Environment :: Console',
+            'Intended Audience :: Developers',
+            'License :: OSI Approved :: Apache Software License',
+            'Operating System :: OS Independent',
+            'Programming Language :: Python',
+            'Natural Language :: English',
+            'Topic :: Utilities'
+      ],
       install_requires=[
           'PyYAML>=3',
-      ]
+      ],
 )
