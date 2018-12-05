@@ -8,6 +8,8 @@ pyyaml = "*"
 
 [dev-packages]
 nose = "*"
+tag-version = "*"
+twine = "*"
 
 [requires]
 python_version = "3.6"
