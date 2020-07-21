@@ -1,4 +1,7 @@
 # cmdline
+
+NOTE: this is proof-of-concept code and is no longer maintained.
+
 The cmdline package provides a standard way to specify and override command settings and logging configuration.  Using cmdline setttings is as simple as creating a `settings.yml`:
 ```
 REMOTE_ADDR:
